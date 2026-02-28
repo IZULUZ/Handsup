@@ -3,77 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>발표 부저 v4 - 교사용</title>
+<title>발표 부저 - 교사용</title>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
 <style>
-body{
-margin:0;
-background:#0f0f1a;
-color:white;
-font-family:sans-serif;
-text-align:center;
-}
-h1{color:#ff3c3c;}
-
-button{
-padding:10px 16px;
-margin:6px;
-border:none;
-border-radius:10px;
-background:#1e90ff;
-color:white;
-font-size:15px;
-cursor:pointer;
-}
-
-.card{
-background:#1c1c2e;
-margin:6px auto;
-padding:10px;
-border-radius:10px;
-width:90%;
-}
-
-.rank1{
-border:3px solid gold;
-}
-
-#fireworks{
-position:fixed;
-left:0;
-top:0;
-width:100%;
-height:100%;
-pointer-events:none;
-}
+body{margin:0;background:#111;color:#fff;font-family:sans-serif;text-align:center;}
+button{padding:10px 18px;margin:6px;border:none;border-radius:8px;background:#2979ff;color:#fff;font-size:15px;}
+.card{background:#1e1e2f;margin:6px auto;padding:8px;border-radius:8px;width:90%;}
+.rank1{border:2px solid gold;}
+canvas{position:fixed;top:0;left:0;pointer-events:none;}
 </style>
 </head>
 <body>
 
-<h1>🎮 발표 부저 v4</h1>
+<h1>🎮 발표 부저 (교사용)</h1>
 
-<h2>📡 접속 학생</h2>
+<h2>접속 학생</h2>
 <div id="students"></div>
 
-<h2>📊 진행 상황</h2>
+<h2>진행 상황</h2>
 <div id="progress"></div>
 
-<h2>🎯 미션</h2>
-<button onclick="startMission(1)">동의 게임</button>
-<button onclick="startMission(2)">색깔 일치</button>
-<button onclick="resetGame()">초기화</button>
+<h2>미션</h2>
+<button onclick="startMission()">발표하시겠습니까?</button>
+<button onclick="resetAll()">초기화</button>
 
-<h2>🏆 순위</h2>
+<h2>순위</h2>
 <div id="ranking"></div>
 
-<canvas id="fireworks"></canvas>
+<canvas id="fire"></canvas>
 
 <script>
-document.addEventListener("DOMContentLoaded",()=>{
-
 const config={
 apiKey:"AIzaSyDHG3uB-tqoE-4YLBHHvBRM4YhPh9qa-mI",
 authDomain:"handsup-262b8.firebaseapp.com",
@@ -94,16 +56,16 @@ const missionRef=db.ref("mission");
 
 let winnerShown=false;
 
-/* 접속 학생 실시간 */
+/* 학생 접속 */
 studentsRef.on("value",snap=>{
 let html="";
 snap.forEach(s=>{
-html+=`<div class="card">학생 ${s.key} 접속중</div>`;
+html+=`<div class="card">학생 ${s.key} 접속</div>`;
 });
 document.getElementById("students").innerHTML=html;
 });
 
-/* 진행상황 실시간 */
+/* 진행 상황 */
 progressRef.on("value",snap=>{
 let html="";
 snap.forEach(s=>{
@@ -128,42 +90,41 @@ document.getElementById("ranking").innerHTML=html;
 
 if(arr.length>0 && !winnerShown){
 winnerShown=true;
-launchFireworks();
+fireworks();
 }
 });
 
-function startMission(type){
+function startMission(){
 winnerShown=false;
 resultsRef.remove();
 progressRef.remove();
 missionRef.set({
-type:type,
 startTime:Date.now(),
 locked:false
 });
 setTimeout(()=>missionRef.update({locked:true}),5000);
 }
 
-window.resetGame=function(){
+function resetAll(){
 missionRef.set(null);
 resultsRef.remove();
 progressRef.remove();
-};
+}
 
-/* 폭죽 애니메이션 */
-function launchFireworks(){
-const canvas=document.getElementById("fireworks");
+/* 폭죽 */
+function fireworks(){
+const canvas=document.getElementById("fire");
 const ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth;
 canvas.height=window.innerHeight;
 
 let particles=[];
-for(let i=0;i<100;i++){
+for(let i=0;i<120;i++){
 particles.push({
 x:canvas.width/2,
 y:canvas.height/2,
-vx:(Math.random()-0.5)*6,
-vy:(Math.random()-0.5)*6,
+vx:(Math.random()-0.5)*8,
+vy:(Math.random()-0.5)*8,
 life:100
 });
 }
@@ -182,8 +143,6 @@ if(particles.length>0)requestAnimationFrame(animate);
 }
 animate();
 }
-
-});
 </script>
 </body>
 </html>
