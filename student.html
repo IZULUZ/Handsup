@@ -3,47 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>발표 부저 - 학생용</title>
+<title>발표 부저 v3 - 학생용</title>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
 <style>
-body {
-  margin:0;
-  background:#0f0f1a;
-  color:white;
-  font-family:'Segoe UI',sans-serif;
-  text-align:center;
-}
-
-#login, #game { padding:20px; }
-
-button {
-  padding:20px;
-  font-size:22px;
-  margin:10px;
-  border:none;
-  border-radius:15px;
-  cursor:pointer;
-  background:#1e90ff;
-  color:white;
-}
-
-.bigBtn {
-  font-size:28px;
-  padding:30px;
-}
-
-#timerBar {
-  height:10px;
-  background:red;
-  width:100%;
-  transition:width 5s linear;
-}
+body{margin:0;background:#0f0f1a;color:white;font-family:sans-serif;text-align:center;}
+button{padding:18px;font-size:22px;margin:8px;border:none;border-radius:12px;background:#1e90ff;color:white;}
+.big{font-size:28px;padding:25px;}
+#timerBar{height:6px;background:red;width:100%;transition:width 5s linear;}
 </style>
 </head>
-
 <body>
 
 <div id="login">
@@ -53,117 +24,95 @@ button {
 </div>
 
 <div id="game" style="display:none;">
-<h2 id="missionTitle"></h2>
 <div id="timerBar"></div>
 <div id="gameArea"></div>
 </div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDHG3uB-tqoE-4YLBHHvBRM4YhPh9qa-mI",
-  authDomain: "handsup-262b8.firebaseapp.com",
-  databaseURL: "https://handsup-262b8-default-rtdb.firebaseio.com",
-  projectId: "handsup-262b8",
-  storageBucket: "handsup-262b8.firebasestorage.app",
-  messagingSenderId: "494093439378",
-  appId: "1:494093439378:web:af0a9081d72f021031f14b"
-};
+const config={ apiKey:"AIzaSyDHG3uB-tqoE-4YLBHHvBRM4YhPh9qa-mI",
+authDomain:"handsup-262b8.firebaseapp.com",
+databaseURL:"https://handsup-262b8-default-rtdb.firebaseio.com",
+projectId:"handsup-262b8",
+storageBucket:"handsup-262b8.firebasestorage.app",
+messagingSenderId:"494093439378",
+appId:"1:494093439378:web:af0a9081d72f021031f14b"};
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+firebase.initializeApp(config);
+const db=firebase.database();
 
-let myId=null;
-let missionStartTime=0;
-let missionActive=false;
+let myId,locked=true;
 
 function enter(){
-  myId=document.getElementById("studentId").value;
-  if(!myId) return;
-  db.ref("students/"+myId).set(true);
-  db.ref("students/"+myId).onDisconnect().remove();
-  document.getElementById("login").style.display="none";
+myId=document.getElementById("studentId").value;
+db.ref("students/"+myId).set(true);
+db.ref("students/"+myId).onDisconnect().remove();
+document.getElementById("login").style.display="none";
 }
 
-db.ref("mission").on("value", snap=>{
-  const mission=snap.val();
-  if(!mission) return;
-  missionStartTime=mission.startTime;
-  startGame(mission.type);
+db.ref("mission").on("value",snap=>{
+let m=snap.val();
+if(!m)return;
+locked=m.locked;
+if(!locked)startGame(m.type);
 });
 
 function startGame(type){
-  missionActive=true;
-  document.getElementById("game").style.display="block";
-  document.getElementById("gameArea").innerHTML="";
-  const bar=document.getElementById("timerBar");
-  bar.style.width="100%";
-  void bar.offsetWidth;
-  bar.style.width="0%";
+locked=false;
+document.getElementById("game").style.display="block";
+let bar=document.getElementById("timerBar");
+bar.style.width="100%";
+void bar.offsetWidth;
+bar.style.width="0%";
+setTimeout(()=>locked=true,5000);
 
-  setTimeout(()=>missionActive=false,5000);
-
-  if(type==1) wordGame();
-  if(type==2) gaugeGame();
-  if(type==3) movingGame();
+if(type==4)agreeGame();
+if(type==5)colorGame();
 }
 
-function success(){
-  if(!missionActive) return;
-  missionActive=false;
-  const time=Date.now()-missionStartTime;
-  db.ref("results/"+myId).set({
-    student:myId,
-    time:time
-  });
-  alert("발표 성공!");
+function submit(){
+if(locked)return;
+db.ref("results").push({
+student:myId,
+serverTime:firebase.database.ServerValue.TIMESTAMP
+});
+locked=true;
 }
 
-function wordGame(){
-  const area=document.getElementById("gameArea");
-  const words=["발표","발펴","발표우","발푠","발표오"];
-  for(let i=0;i<16;i++){
-    let btn=document.createElement("button");
-    btn.className="bigBtn";
-    btn.innerText= i==0 ? "발표" : words[Math.floor(Math.random()*words.length)];
-    btn.onclick=()=>{
-      if(btn.innerText==="발표") success();
-    };
-    area.appendChild(btn);
-  }
+function agreeGame(){
+let area=document.getElementById("gameArea");
+area.innerHTML="";
+let correct=Math.floor(Math.random()*8);
+for(let i=0;i<8;i++){
+let btn=document.createElement("button");
+btn.className="big";
+btn.innerText= i==correct?"동의하시겠습니까?":"동의하시겠습니가?";
+btn.onclick=()=>{
+if(i==correct)submit();
+};
+area.appendChild(btn);
+}
 }
 
-function gaugeGame(){
-  const area=document.getElementById("gameArea");
-  let gauge=0;
-  let btn=document.createElement("button");
-  btn.className="bigBtn";
-  btn.innerText="연타!";
-  btn.onclick=()=>{
-    gauge+=10;
-    if(gauge>=100){
-      btn.innerText="발표하기";
-      btn.onclick=success;
-    }
-  };
-  area.appendChild(btn);
-}
+function colorGame(){
+let area=document.getElementById("gameArea");
+area.innerHTML="";
+let words=["빨강","파랑","초록","노랑"];
+let word=words[Math.floor(Math.random()*4)];
+let div=document.createElement("div");
+div.innerText=word;
+div.style.fontSize="40px";
+div.style.color=words[Math.floor(Math.random()*4)];
+area.appendChild(div);
 
-function movingGame(){
-  const area=document.getElementById("gameArea");
-  let btn=document.createElement("button");
-  btn.className="bigBtn";
-  btn.innerText="발표";
-  btn.style.position="absolute";
-  btn.onclick=success;
-  area.appendChild(btn);
-
-  setInterval(()=>{
-    if(!missionActive) return;
-    btn.style.left=Math.random()*80+"%";
-    btn.style.top=Math.random()*70+"%";
-  },600);
+words.forEach(w=>{
+let btn=document.createElement("button");
+btn.innerText=w;
+btn.onclick=()=>{
+if(w===word)submit();
+};
+area.appendChild(btn);
+});
 }
 </script>
-
 </body>
 </html>
