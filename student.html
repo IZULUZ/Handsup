@@ -13,11 +13,24 @@
 
 <h2>🎓 학생 모드</h2>
 
-<input type="text" id="name" placeholder="이름 입력">
+<select id="numberSelect">
+  <option value="">번호 선택</option>
+  <script>
+    for(let i=1;i<=30;i++){
+      document.write("<option value='"+i+"'>"+i+"번</option>");
+    }
+  </script>
+</select>
+
 <button onclick="join()">입장</button>
 
-<div id="gameArea">기다리는 중...</div>
-<button id="reactionBtn" onclick="reactionClick()" style="display:none;">누르기!</button>
+<hr>
+
+<div id="status">번호를 선택하고 입장하세요</div>
+
+<button id="reactionBtn" onclick="clickReaction()" style="display:none;">
+  누르기!
+</button>
 
 </body>
 </html>
