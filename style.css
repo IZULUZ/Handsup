@@ -1,73 +1,67 @@
-body {
-  margin:0;
-  font-family:sans-serif;
-  background:#0d1b2a;
-  color:white;
-  text-align:center;
-}
-
-.center-screen {
-  padding:40px 20px;
-}
-
-.hidden { display:none; }
-
-.title {
-  font-size:48px;
-  margin-bottom:50px;
-}
-
-.big-text {
-  font-size:36px;
-  margin-bottom:20px;
-}
-
-.big-btn {
-  font-size:28px;
-  padding:20px;
-  margin:15px;
-  width:80%;
-  max-width:400px;
-  border:none;
-  border-radius:15px;
-  background:#00b4d8;
-  color:white;
-}
-
-.teacher-btn { background:#ff006e; }
-.student-btn { background:#00b4d8; }
-.start-btn { background:#06d6a0; }
-
-.big-select {
-  font-size:28px;
-  padding:15px;
-  width:80%;
-  max-width:400px;
-  border-radius:12px;
-  margin-bottom:20px;
-}
-
-.live-box {
-  font-size:28px;
-  margin:20px auto;
-  width:80%;
-  max-width:500px;
-  text-align:left;
-}
-
-.status-text {
-  font-size:28px;
-  margin-top:20px;
-}
 body{
-  background:#0f1c2e;
-  color:white;
+  margin:0;
+  font-family: 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at center, #0f2027, #090a0f);
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.container{
   text-align:center;
-  font-family:Arial;
+  width:90%;
+  max-width:900px;
+}
+
+h1,h2{
+  text-shadow:0 0 10px #00f7ff, 0 0 20px #00f7ff;
 }
 
 button{
-  padding:10px 20px;
+  padding:12px 24px;
   margin:10px;
+  border:none;
+  border-radius:8px;
+  background:#111;
+  color:#00f7ff;
   font-size:16px;
+  cursor:pointer;
+  box-shadow:0 0 10px #00f7ff;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#00f7ff;
+  color:#000;
+  box-shadow:0 0 20px #00f7ff;
+}
+
+.card{
+  margin-top:20px;
+  padding:20px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.05);
+  box-shadow:0 0 15px rgba(0,247,255,0.3);
+}
+
+.student-grid{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+  margin-top:15px;
+}
+
+.student-card{
+  padding:10px 15px;
+  border-radius:8px;
+  background:#111;
+  box-shadow:0 0 10px #00f7ff;
+}
+.big{
+  font-size:40px;
+  margin-top:20px;
+  text-shadow:0 0 15px #ff00ff;
 }
