@@ -13,11 +13,17 @@
 
 <h2>👩‍🏫 교사 모드</h2>
 
-<button onclick="startGame('random')">랜덤 발표</button>
-<button onclick="startGame('reaction')">순발력 게임</button>
+<h3>실시간 입장 학생</h3>
+<div id="studentList">없음</div>
+<div>총 인원: <span id="count">0</span>명</div>
 
-<h3>현재 상태</h3>
-<div id="status">대기중</div>
+<hr>
+
+<button onclick="startReactionGame()">⚡ 순발력 게임 시작</button>
+<button onclick="resetGame()">🔄 게임 리셋</button>
+
+<h3>게임 결과</h3>
+<div id="winner">아직 없음</div>
 
 </body>
 </html>
