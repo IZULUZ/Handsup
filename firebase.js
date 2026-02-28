@@ -1,4 +1,6 @@
-var firebaseConfig = {
+// Firebase CDN import 방식 (HTML에서 먼저 불러와야 함)
+
+const firebaseConfig = {
   apiKey: "AIzaSyDHG3uB-tqoE-4YLBHHvBRM4YhPh9qa-mI",
   authDomain: "handsup-262b8.firebaseapp.com",
   databaseURL: "https://handsup-262b8-default-rtdb.firebaseio.com",
@@ -9,4 +11,9 @@ var firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-var db = firebase.database();
+const db = firebase.database();
+
+// 공통 경로
+const GAME_REF = db.ref("game");
+const PRESENCE_REF = db.ref("presence");
+const RESULT_REF = db.ref("results");
