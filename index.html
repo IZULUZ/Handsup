@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>발표하시겠습니까?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<h1 class="title">🎤 발표하시겠습니까?</h1>
+
+<div id="loginBox">
+  <input type="text" id="nameInput" placeholder="이름 입력" />
+  <button onclick="join()">입장</button>
+</div>
+
+<div id="gameBox" style="display:none;">
+  <h2 id="welcome"></h2>
+  <button onclick="startGame()">게임 시작</button>
+  <div id="gameArea"></div>
+</div>
+
+<div id="teacherBox" style="display:none;">
+  <h2>👩‍🏫 교사용 실시간 현황</h2>
+  <div id="studentList"></div>
+</div>
+
+<canvas id="fireworks"></canvas>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
