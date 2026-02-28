@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>교사 화면</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="firebase.js"></script>
+<script src="app.js"></script>
+</head>
+<body>
+
+<h2>👩‍🏫 교사 모드</h2>
+
+<button onclick="startGame('random')">랜덤 발표</button>
+<button onclick="startGame('reaction')">순발력 게임</button>
+
+<h3>현재 상태</h3>
+<div id="status">대기중</div>
+
+</body>
+</html>
