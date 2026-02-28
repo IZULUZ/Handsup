@@ -1,12 +1,14 @@
-let studentNumber = null;
-let missionStartTime = null;
+let myNumber=null;
+let startTime=null;
+let submitted=false;
 
-function enterGame() {
-  studentNumber = document.getElementById("numberInput").value;
-  if (!studentNumber) return;
+function join(){
+  const num=document.getElementById("numInput").value.trim();
+  if(!num||isNaN(num)) return alert("숫자 입력");
 
-  // Presence 등록
-  const myRef = PRESENCE_REF.child(studentNumber);
+  myNumber=num;
+
+  const myRef=PRESENCE.child(myNumber);
   myRef.set(true);
   myRef.onDisconnect().remove();
 
@@ -14,84 +16,73 @@ function enterGame() {
   document.getElementById("waiting").classList.remove("hidden");
 }
 
-// 🔥 미션 감지
-GAME_REF.on("value", snapshot => {
-  const data = snapshot.val();
-  if (!data || !studentNumber) return;
-
-  if (data.status === "playing") {
-    missionStartTime = data.missionStartTime;
-    startGame(data.mission);
-  }
+/* 미션 감지 */
+GAME.on("value", snap=>{
+  const data=snap.val();
+  if(!data||data.status!=="playing") return;
+  startTime=data.startTime;
+  submitted=false;
+  launchGame(data.mission);
 });
 
-function startGame(type) {
+function launchGame(type){
   document.getElementById("waiting").classList.add("hidden");
   document.getElementById("game").classList.remove("hidden");
 
-  const area = document.getElementById("gameArea");
-  area.innerHTML = "";
+  const area=document.getElementById("gameArea");
+  area.innerHTML="";
 
-  if (type === 1) wordGame(area);
-  if (type === 2) gaugeGame(area);
-  if (type === 3) movingButtonGame(area);
-}
-
-function submitResult() {
-  const time = Date.now() - missionStartTime;
-
-  RESULT_REF.child(studentNumber).set({
-    number: studentNumber,
-    time: time
-  });
-
-  document.getElementById("gameArea").innerHTML = "<h2>제출 완료!</h2>";
-}
-
-/* ====== 미니게임 ====== */
-
-function wordGame(area) {
-  for (let i=0;i<16;i++){
-    const btn = document.createElement("button");
-    btn.className="game-btn";
-
-    if(i===0){
-      btn.innerText="발표";
-      btn.onclick=submitResult;
-    }else{
-      btn.innerText=["발펴","발표우","발표ㅜ"][Math.floor(Math.random()*3)];
+  if(type===1){
+    for(let i=0;i<16;i++){
+      const btn=document.createElement("button");
+      btn.className="game-btn";
+      btn.innerText=i===0?"발표":"발펴";
+      if(i===0) btn.onclick=submit;
+      area.appendChild(btn);
     }
+  }
+
+  if(type===2){
+    let count=0;
+    const btn=document.createElement("button");
+    btn.className="big-btn";
+    btn.innerText="연타!";
+    btn.onclick=()=>{
+      count+=10;
+      if(count>=100) submit();
+    };
     area.appendChild(btn);
+  }
+
+  if(type===3){
+    const btn=document.createElement("button");
+    btn.innerText="발표";
+    btn.className="big-btn";
+    area.appendChild(btn);
+
+    const move=setInterval(()=>{
+      btn.style.position="absolute";
+      btn.style.left=Math.random()*70+"%";
+      btn.style.top=Math.random()*60+"%";
+    },600);
+
+    btn.onclick=()=>{
+      clearInterval(move);
+      submit();
+    };
   }
 }
 
-function gaugeGame(area){
-  let gauge=0;
-  const btn=document.createElement("button");
-  btn.innerText="연타!";
-  btn.className="big-btn";
-  btn.onclick=()=>{
-    gauge+=10;
-    if(gauge>=100){
-      submitResult();
-    }
-  };
-  area.appendChild(btn);
-}
+function submit(){
+  if(submitted) return;
+  submitted=true;
 
-function movingButtonGame(area){
-  const btn=document.createElement("button");
-  btn.innerText="발표";
-  btn.className="moving-btn";
-  area.appendChild(btn);
+  const time=Date.now()-startTime;
 
-  const interval=setInterval(()=>{
-    btn.style.left=Math.random()*80+"%";
-    btn.style.top=Math.random()*60+"%";
-  },600);
+  RESULTS.child(myNumber).set({
+    number:myNumber,
+    time:time
+  });
 
-  btn.onclick=()=>{
-    clearInterval(interval);
-    submitResult();
-  };
+  document.getElementById("gameArea").innerHTML="<h2>제출 완료!</h2>";
 }
