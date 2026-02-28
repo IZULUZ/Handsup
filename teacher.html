@@ -3,44 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>발표 부저 v3 - 교사용</title>
+<title>발표 부저 v4 - 교사용</title>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
 <style>
-body{margin:0;background:#0f0f1a;color:white;font-family:sans-serif;text-align:center;}
-button{padding:12px 20px;margin:6px;border:none;border-radius:10px;font-size:16px;cursor:pointer;background:#1e90ff;color:white;}
-.card{background:#1c1c2e;margin:8px auto;padding:12px;border-radius:12px;width:85%;}
-.rank1{border:2px solid gold;}
-.seasonBox{background:#111;margin-top:20px;padding:15px;border-radius:15px;}
+body{
+margin:0;
+background:#0f0f1a;
+color:white;
+font-family:sans-serif;
+text-align:center;
+}
+h1{color:#ff3c3c;}
+
+button{
+padding:10px 16px;
+margin:6px;
+border:none;
+border-radius:10px;
+background:#1e90ff;
+color:white;
+font-size:15px;
+cursor:pointer;
+}
+
+.card{
+background:#1c1c2e;
+margin:6px auto;
+padding:10px;
+border-radius:10px;
+width:90%;
+}
+
+.rank1{
+border:3px solid gold;
+}
+
+#fireworks{
+position:fixed;
+left:0;
+top:0;
+width:100%;
+height:100%;
+pointer-events:none;
+}
 </style>
 </head>
 <body>
 
-<h1>🎮 발표 부저 v3 PRO</h1>
+<h1>🎮 발표 부저 v4</h1>
 
 <h2>📡 접속 학생</h2>
-<div id="studentsList"></div>
+<div id="students"></div>
+
+<h2>📊 진행 상황</h2>
+<div id="progress"></div>
 
 <h2>🎯 미션</h2>
-<button onclick="startMission(1)">단어</button>
-<button onclick="startMission(2)">게이지</button>
-<button onclick="startMission(3)">도망</button>
-<button onclick="startMission(4)">동의하시겠습니가?</button>
-<button onclick="startMission(5)">색깔일치</button>
+<button onclick="startMission(1)">동의 게임</button>
+<button onclick="startMission(2)">색깔 일치</button>
 <button onclick="resetGame()">초기화</button>
 
-<h2>🏆 이번 판 순위</h2>
+<h2>🏆 순위</h2>
 <div id="ranking"></div>
 
-<div class="seasonBox">
-<h2>🏅 시즌 랭킹</h2>
-<div id="seasonRanking"></div>
-<button onclick="resetSeason()">시즌 초기화</button>
-</div>
+<canvas id="fireworks"></canvas>
 
 <script>
+document.addEventListener("DOMContentLoaded",()=>{
+
 const config={
 apiKey:"AIzaSyDHG3uB-tqoE-4YLBHHvBRM4YhPh9qa-mI",
 authDomain:"handsup-262b8.firebaseapp.com",
@@ -55,80 +88,102 @@ firebase.initializeApp(config);
 const db=firebase.database();
 
 const studentsRef=db.ref("students");
+const progressRef=db.ref("progress");
 const resultsRef=db.ref("results");
 const missionRef=db.ref("mission");
-const seasonRef=db.ref("season/current");
 
-let currentSeason="season1";
-seasonRef.on("value",snap=>{
-if(snap.val())currentSeason=snap.val();
-});
+let winnerShown=false;
 
-studentsRef.limitToFirst(50).on("value",snap=>{
+/* 접속 학생 실시간 */
+studentsRef.on("value",snap=>{
 let html="";
 snap.forEach(s=>{
-html+=`<div class="card">학생 ${s.key}</div>`;
+html+=`<div class="card">학생 ${s.key} 접속중</div>`;
 });
-document.getElementById("studentsList").innerHTML=html;
+document.getElementById("students").innerHTML=html;
 });
 
+/* 진행상황 실시간 */
+progressRef.on("value",snap=>{
+let html="";
+snap.forEach(s=>{
+html+=`<div class="card">학생 ${s.key} → ${s.val()}</div>`;
+});
+document.getElementById("progress").innerHTML=html;
+});
+
+/* 결과 */
 resultsRef.on("value",snap=>{
 let arr=[];
 snap.forEach(s=>arr.push(s.val()));
-arr.sort((a,b)=>a.serverTime-b.serverTime);
+arr.sort((a,b)=>a.time-b.time);
 
 let html="";
 arr.forEach((r,i)=>{
-if(i<3){
-updateSeasonScore(r.student,i);
-}
 html+=`<div class="card ${i==0?"rank1":""}">
 ${i+1}등 - 학생 ${r.student}
 </div>`;
 });
 document.getElementById("ranking").innerHTML=html;
-});
 
-function updateSeasonScore(student,rank){
-let point= rank==0?3:rank==1?2:rank==2?1:0;
-if(point===0)return;
-db.ref(`season/${currentSeason}/scores/${student}`).transaction(v=>{
-return (v||0)+point;
-});
-loadSeasonRanking();
+if(arr.length>0 && !winnerShown){
+winnerShown=true;
+launchFireworks();
 }
-
-function loadSeasonRanking(){
-db.ref(`season/${currentSeason}/scores`).once("value",snap=>{
-let arr=[];
-snap.forEach(s=>arr.push({id:s.key,score:s.val()}));
-arr.sort((a,b)=>b.score-a.score);
-let html="";
-arr.forEach((r,i)=>{
-html+=`<div class="card">${i+1}위 - 학생 ${r.id} (${r.score}점)</div>`;
 });
-document.getElementById("seasonRanking").innerHTML=html;
-});
-}
 
 function startMission(type){
+winnerShown=false;
 resultsRef.remove();
+progressRef.remove();
 missionRef.set({
 type:type,
-startTime:firebase.database.ServerValue.TIMESTAMP,
+startTime:Date.now(),
 locked:false
 });
 setTimeout(()=>missionRef.update({locked:true}),5000);
 }
 
-function resetGame(){
+window.resetGame=function(){
 missionRef.set(null);
 resultsRef.remove();
+progressRef.remove();
+};
+
+/* 폭죽 애니메이션 */
+function launchFireworks(){
+const canvas=document.getElementById("fireworks");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let particles=[];
+for(let i=0;i<100;i++){
+particles.push({
+x:canvas.width/2,
+y:canvas.height/2,
+vx:(Math.random()-0.5)*6,
+vy:(Math.random()-0.5)*6,
+life:100
+});
 }
 
-function resetSeason(){
-db.ref(`season/${currentSeason}`).remove();
+function animate(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+particles.forEach(p=>{
+p.x+=p.vx;
+p.y+=p.vy;
+p.life--;
+ctx.fillStyle="hsl("+Math.random()*360+",100%,50%)";
+ctx.fillRect(p.x,p.y,4,4);
+});
+particles=particles.filter(p=>p.life>0);
+if(particles.length>0)requestAnimationFrame(animate);
 }
+animate();
+}
+
+});
 </script>
 </body>
 </html>
