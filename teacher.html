@@ -11,19 +11,21 @@
 </head>
 <body>
 
-<h2>👩‍🏫 교사 모드</h2>
+<div class="container">
+<h2>👩‍🏫 교사 대시보드</h2>
 
+<div class="card">
 <h3>실시간 입장 학생</h3>
-<div id="studentList">없음</div>
+<div class="student-grid" id="studentGrid"></div>
 <div>총 인원: <span id="count">0</span>명</div>
+</div>
 
-<hr>
-
+<div class="card">
 <button onclick="startReactionGame()">⚡ 순발력 게임 시작</button>
-<button onclick="resetGame()">🔄 게임 리셋</button>
+<button onclick="resetGame()">🔄 리셋</button>
+<div class="big" id="winnerDisplay"></div>
+</div>
 
-<h3>게임 결과</h3>
-<div id="winner">아직 없음</div>
-
+</div>
 </body>
 </html>
