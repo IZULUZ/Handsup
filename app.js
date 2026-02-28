@@ -1,120 +1,104 @@
 let myNumber = null;
 
-/* ======================
-   학생 입장
-====================== */
+/* 학생 입장 */
 function join(){
-  const number = document.getElementById("numberSelect").value;
-  if(!number) return alert("번호 선택!");
+  const num = document.getElementById("numberSelect").value;
+  if(!num) return alert("번호 선택!");
 
-  myNumber = number;
+  myNumber = num;
 
-  db.ref("students/"+number).set({
-    joined:true,
-    finished:false
+  db.ref("students/"+num).set({
+    joined:true
   });
 
-  document.getElementById("status").innerText = "게임 대기 중...";
+  document.getElementById("joinScreen").style.display="none";
+  document.getElementById("waitingScreen").style.display="block";
 }
 
-/* ======================
-   교사 - 실시간 학생 목록
-====================== */
-if(document.getElementById("studentList")){
-  db.ref("students").on("value", snapshot=>{
-    const data = snapshot.val();
-    const listDiv = document.getElementById("studentList");
-    const countSpan = document.getElementById("count");
+/* 교사 실시간 학생 목록 */
+if(document.getElementById("studentGrid")){
+  db.ref("students").on("value", snap=>{
+    const data = snap.val();
+    const grid = document.getElementById("studentGrid");
+    const count = document.getElementById("count");
 
+    grid.innerHTML="";
     if(!data){
-      listDiv.innerText = "없음";
-      countSpan.innerText = 0;
+      count.innerText=0;
       return;
     }
 
-    const numbers = Object.keys(data);
-    listDiv.innerText = numbers.join(", ");
-    countSpan.innerText = numbers.length;
+    const nums = Object.keys(data);
+    nums.forEach(n=>{
+      const div = document.createElement("div");
+      div.className="student-card";
+      div.innerText=n+"번";
+      grid.appendChild(div);
+    });
+
+    count.innerText=nums.length;
   });
 }
 
-/* ======================
-   게임 시작
-====================== */
+/* 게임 시작 */
 function startReactionGame(){
   db.ref("game").set({
     active:true,
-    type:"reaction",
     winner:null
-  });
-
-  db.ref("reaction").remove();
-  db.ref("students").once("value", snap=>{
-    snap.forEach(child=>{
-      db.ref("students/"+child.key+"/finished").set(false);
-    });
   });
 }
 
-/* ======================
-   학생 - 게임 감지
-====================== */
-db.ref("game").on("value", snapshot=>{
-  const game = snapshot.val();
-  const status = document.getElementById("status");
-  const btn = document.getElementById("reactionBtn");
+/* 학생 화면 게임 감지 */
+db.ref("game").on("value", snap=>{
+  const game = snap.val();
 
-  if(!status) return;
+  const waiting = document.getElementById("waitingScreen");
+  const gameScreen = document.getElementById("gameScreen");
+  const result = document.getElementById("resultDisplay");
+
+  if(!waiting) return;
 
   if(!game || !game.active){
-    status.innerText = "게임 대기 중...";
-    btn.style.display="none";
+    waiting.style.display="block";
+    gameScreen.style.display="none";
     return;
   }
 
-  if(game.type === "reaction"){
-    status.innerText = "⚡ 가장 빨리 누르세요!";
-    btn.style.display="inline-block";
+  if(game.winner){
+    waiting.style.display="none";
+    gameScreen.style.display="none";
+    result.innerText="🏆 "+game.winner+"번 승리!";
+    return;
   }
 
-  if(game.winner){
-    status.innerText = "🏆 "+game.winner+"번 승리!";
-    btn.style.display="none";
-  }
+  waiting.style.display="none";
+  gameScreen.style.display="block";
 });
 
-/* ======================
-   학생 클릭
-====================== */
+/* 학생 클릭 */
 function clickReaction(){
   if(!myNumber) return;
 
   db.ref("game").once("value", snap=>{
     const game = snap.val();
-    if(!game || game.winner) return;
-
-    db.ref("game/winner").set(myNumber);
-    db.ref("students/"+myNumber+"/finished").set(true);
-  });
-}
-
-/* ======================
-   교사 - 승자 감지
-====================== */
-if(document.getElementById("winner")){
-  db.ref("game/winner").on("value", snapshot=>{
-    const winner = snapshot.val();
-    if(winner){
-      document.getElementById("winner").innerText = winner+"번";
+    if(!game.winner){
+      db.ref("game/winner").set(myNumber);
     }
   });
 }
 
-/* ======================
-   리셋
-====================== */
+/* 교사 승자 표시 */
+if(document.getElementById("winnerDisplay")){
+  db.ref("game/winner").on("value", snap=>{
+    const w = snap.val();
+    if(w){
+      document.getElementById("winnerDisplay").innerText="🏆 "+w+"번 승리!";
+    }
+  });
+}
+
+/* 리셋 */
 function resetGame(){
   db.ref("game").remove();
-  db.ref("reaction").remove();
   db.ref("students").remove();
 }
