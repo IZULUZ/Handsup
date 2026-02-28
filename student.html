@@ -3,28 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>발표 부저 v4 - 학생용</title>
+<title>발표 부저 - 학생용</title>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
 <style>
-body{
-margin:0;
-background:#0f0f1a;
-color:white;
-font-family:sans-serif;
-text-align:center;
-}
-button{
-padding:20px;
-font-size:22px;
-margin:8px;
-border:none;
-border-radius:10px;
-background:#1e90ff;
-color:white;
-}
+body{margin:0;background:#111;color:#fff;font-family:sans-serif;text-align:center;}
+button{padding:18px;font-size:20px;margin:6px;border:none;border-radius:8px;background:#2979ff;color:#fff;}
 </style>
 </head>
 <body>
@@ -38,8 +24,6 @@ color:white;
 <div id="game" style="display:none;"></div>
 
 <script>
-document.addEventListener("DOMContentLoaded",()=>{
-
 const config={
 apiKey:"AIzaSyDHG3uB-tqoE-4YLBHHvBRM4YhPh9qa-mI",
 authDomain:"handsup-262b8.firebaseapp.com",
@@ -56,29 +40,40 @@ const db=firebase.database();
 let myId=null;
 let locked=true;
 
-window.enter=function(){
+function enter(){
 myId=document.getElementById("id").value;
 if(!myId)return;
+
 db.ref("students/"+myId).set(true);
 db.ref("students/"+myId).onDisconnect().remove();
 document.getElementById("login").style.display="none";
-};
+}
 
 db.ref("mission").on("value",snap=>{
 let m=snap.val();
 if(!m)return;
 locked=m.locked;
-if(!locked)startGame(m.type);
+if(!locked)startGame();
 });
 
-function startGame(type){
+function startGame(){
 locked=false;
 const area=document.getElementById("game");
 area.style.display="block";
 area.innerHTML="";
 
-if(type==1)agreeGame();
-if(type==2)colorGame();
+let correct=Math.floor(Math.random()*8);
+
+for(let i=0;i<8;i++){
+let btn=document.createElement("button");
+btn.innerText=i==correct?"발표하시겠습니까?":"발표하시겠습니가?";
+btn.onclick=()=>{
+if(i==correct)submit();
+};
+area.appendChild(btn);
+}
+
+db.ref("progress/"+myId).set("판단 중");
 }
 
 function submit(){
@@ -89,37 +84,6 @@ time:Date.now()
 });
 locked=true;
 }
-
-function agreeGame(){
-let area=document.getElementById("game");
-for(let i=0;i<6;i++){
-let btn=document.createElement("button");
-btn.innerText=i==0?"동의하시겠습니까?":"동의하시겠습니가?";
-btn.onclick=()=>{ if(i==0)submit(); };
-area.appendChild(btn);
-}
-db.ref("progress/"+myId).set("약관 확인중");
-}
-
-function colorGame(){
-let area=document.getElementById("game");
-let words=["빨강","파랑","초록","노랑"];
-let word=words[Math.floor(Math.random()*4)];
-let title=document.createElement("h2");
-title.innerText=word;
-title.style.color=words[Math.floor(Math.random()*4)];
-area.appendChild(title);
-
-words.forEach(w=>{
-let btn=document.createElement("button");
-btn.innerText=w;
-btn.onclick=()=>{ if(w===word)submit(); };
-area.appendChild(btn);
-});
-db.ref("progress/"+myId).set("색깔 판단중");
-}
-
-});
 </script>
 </body>
 </html>
