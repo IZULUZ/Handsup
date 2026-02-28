@@ -1,42 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>학생 화면</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-<script src="firebase.js"></script>
-<script src="app.js"></script>
+<title>Student Panel</title>
+<link rel="stylesheet" href="css/style.css">
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="js/firebase.js"></script>
+<script defer src="js/student.js"></script>
 </head>
-<body>
+<body class="dark">
 
-<div class="container">
-
-<div id="joinScreen">
-<h2>🎓 번호 선택</h2>
-<select id="numberSelect">
-<option value="">번호 선택</option>
-<script>
-for(let i=1;i<=30;i++){
-document.write("<option value='"+i+"'>"+i+"번</option>");
-}
-</script>
-</select>
-<button onclick="join()">입장</button>
+<div id="login" class="center-panel">
+  <h2>번호 입력</h2>
+  <input type="text" id="numberInput" placeholder="번호 입력">
+  <button onclick="enterGame()">입장</button>
 </div>
 
-<div id="waitingScreen" style="display:none;">
-<h2>게임 대기 중...</h2>
+<div id="waiting" class="center-panel hidden">
+  <h2 class="neon">게임 대기 중...</h2>
 </div>
 
-<div id="gameScreen" style="display:none;">
-<h2>⚡ 가장 빨리 누르세요!</h2>
-<button onclick="clickReaction()">누르기!</button>
+<div id="game" class="center-panel hidden">
+  <div id="gameArea"></div>
 </div>
 
-<div class="big" id="resultDisplay"></div>
-
-</div>
 </body>
 </html>
