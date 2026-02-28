@@ -1,35 +1,40 @@
 body {
   margin: 0;
   font-family: sans-serif;
-  text-align: center;
-  background: #0f172a;
+  background: #0b1a33;
   color: white;
+  text-align: center;
 }
 
-.title {
-  margin-top: 40px;
+.main-title {
+  margin-top: 30px;
   font-size: 40px;
 }
 
-input {
+.container {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-top: 50px;
+  flex-wrap: wrap;
+}
+
+.panel {
+  background: #13254a;
+  padding: 30px;
+  border-radius: 12px;
+  width: 320px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.4);
+}
+
+select, button {
+  width: 100%;
   padding: 10px;
-  font-size: 18px;
+  margin-top: 15px;
+  font-size: 16px;
 }
 
-button {
-  padding: 10px 20px;
-  font-size: 18px;
-  margin: 10px;
-  cursor: pointer;
-}
-
-#studentList {
+#liveList {
   margin-top: 20px;
-}
-
-canvas {
-  position: fixed;
-  top:0;
-  left:0;
-  pointer-events:none;
+  text-align: left;
 }
