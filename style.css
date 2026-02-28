@@ -1,40 +1,61 @@
 body {
-  margin: 0;
-  font-family: sans-serif;
-  background: #0b1a33;
-  color: white;
-  text-align: center;
+  margin:0;
+  font-family:sans-serif;
+  background:#0d1b2a;
+  color:white;
+  text-align:center;
 }
 
-.main-title {
-  margin-top: 30px;
-  font-size: 40px;
+.center-screen {
+  padding:40px 20px;
 }
 
-.container {
-  display: flex;
-  justify-content: center;
-  gap: 50px;
-  margin-top: 50px;
-  flex-wrap: wrap;
+.hidden { display:none; }
+
+.title {
+  font-size:48px;
+  margin-bottom:50px;
 }
 
-.panel {
-  background: #13254a;
-  padding: 30px;
-  border-radius: 12px;
-  width: 320px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.4);
+.big-text {
+  font-size:36px;
+  margin-bottom:20px;
 }
 
-select, button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 15px;
-  font-size: 16px;
+.big-btn {
+  font-size:28px;
+  padding:20px;
+  margin:15px;
+  width:80%;
+  max-width:400px;
+  border:none;
+  border-radius:15px;
+  background:#00b4d8;
+  color:white;
 }
 
-#liveList {
-  margin-top: 20px;
-  text-align: left;
+.teacher-btn { background:#ff006e; }
+.student-btn { background:#00b4d8; }
+.start-btn { background:#06d6a0; }
+
+.big-select {
+  font-size:28px;
+  padding:15px;
+  width:80%;
+  max-width:400px;
+  border-radius:12px;
+  margin-bottom:20px;
+}
+
+.live-box {
+  font-size:28px;
+  margin:20px auto;
+  width:80%;
+  max-width:500px;
+  text-align:left;
+}
+
+.status-text {
+  font-size:28px;
+  margin-top:20px;
 }
