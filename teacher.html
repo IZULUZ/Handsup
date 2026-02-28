@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Teacher Panel</title>
+<title>교사 모드</title>
 <link rel="stylesheet" href="css/style.css">
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -10,25 +10,31 @@
 <script src="js/firebase.js"></script>
 <script defer src="js/teacher.js"></script>
 </head>
+
 <body class="dark">
+<div class="panel">
 
-<div class="center-panel">
-  <h1 class="neon">🎮 발표 부저 시스템</h1>
+<h1 class="neon-text">👩‍🏫 교사 대시보드</h1>
 
-  <div class="mission-select">
-    <button onclick="startMission(1)">정확한 단어 찾기</button>
-    <button onclick="startMission(2)">게이지 채우기</button>
-    <button onclick="startMission(3)">도망가는 버튼</button>
-  </div>
-
-  <h2>🟢 접속 학생</h2>
-  <div id="students" class="card-list"></div>
-
-  <h2>🏆 발표 순위</h2>
-  <div id="ranking" class="card-list"></div>
-
-  <button class="reset" onclick="resetGame()">초기화</button>
+<div class="card">
+  <h2>접속 학생</h2>
+  <div id="studentList"></div>
 </div>
 
+<div class="card">
+  <h2>미션 선택</h2>
+  <button onclick="startMission(1)">단어 찾기</button>
+  <button onclick="startMission(2)">게이지</button>
+  <button onclick="startMission(3)">도망 버튼</button>
+</div>
+
+<div class="card">
+  <h2>순위</h2>
+  <div id="ranking"></div>
+</div>
+
+<button onclick="resetAll()">초기화</button>
+
+</div>
 </body>
 </html>
