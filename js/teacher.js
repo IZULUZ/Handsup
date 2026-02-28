@@ -1,54 +1,46 @@
-function startMission(type) {
-  const startTime = Date.now();
+resetAll(); // 시작 시 DB 초기화
 
-  GAME_REF.set({
-    mission: type,
-    missionStartTime: startTime,
-    status: "playing"
+function startMission(type){
+  RESULTS.remove();
+
+  GAME.set({
+    mission:type,
+    startTime:Date.now(),
+    status:"playing"
   });
-
-  RESULT_REF.remove();
 }
 
-function resetGame() {
-  GAME_REF.set({
-    mission: null,
-    missionStartTime: null,
-    status: "waiting"
-  });
-
-  RESULT_REF.remove();
+function resetAll(){
+  PRESENCE.remove();
+  GAME.set({status:"waiting"});
+  RESULTS.remove();
 }
 
-// 🔥 실시간 학생 접속 확인
-PRESENCE_REF.on("value", snapshot => {
-  const list = document.getElementById("students");
-  list.innerHTML = "";
-
-  snapshot.forEach(child => {
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerText = `학생 ${child.key}`;
+/* 실시간 학생 */
+PRESENCE.on("value", snap=>{
+  const list=document.getElementById("studentList");
+  list.innerHTML="";
+  snap.forEach(child=>{
+    const div=document.createElement("div");
+    div.className="card";
+    div.innerText=child.key+"번";
     list.appendChild(div);
   });
 });
 
-// 🔥 실시간 순위
-RESULT_REF.on("value", snapshot => {
-  const ranking = document.getElementById("ranking");
-  ranking.innerHTML = "";
+/* 실시간 순위 */
+RESULTS.on("value", snap=>{
+  const ranking=document.getElementById("ranking");
+  ranking.innerHTML="";
 
-  let results = [];
-  snapshot.forEach(child => {
-    results.push(child.val());
-  });
+  let arr=[];
+  snap.forEach(c=>arr.push(c.val()));
+  arr.sort((a,b)=>a.time-b.time);
 
-  results.sort((a,b) => a.time - b.time);
-
-  results.forEach((r, i) => {
-    const div = document.createElement("div");
-    div.className = "card winner";
-    div.innerText = `${i+1}등 - ${r.number}번 (${r.time}ms)`;
+  arr.forEach((r,i)=>{
+    const div=document.createElement("div");
+    div.className="card";
+    div.innerText=`${i+1}등 - ${r.number}번 (${r.time}ms)`;
     ranking.appendChild(div);
   });
 });
