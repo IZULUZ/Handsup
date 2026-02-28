@@ -11,26 +11,32 @@
 </head>
 <body>
 
-<h2>🎓 학생 모드</h2>
+<div class="container">
 
+<div id="joinScreen">
+<h2>🎓 번호 선택</h2>
 <select id="numberSelect">
-  <option value="">번호 선택</option>
-  <script>
-    for(let i=1;i<=30;i++){
-      document.write("<option value='"+i+"'>"+i+"번</option>");
-    }
-  </script>
+<option value="">번호 선택</option>
+<script>
+for(let i=1;i<=30;i++){
+document.write("<option value='"+i+"'>"+i+"번</option>");
+}
+</script>
 </select>
-
 <button onclick="join()">입장</button>
+</div>
 
-<hr>
+<div id="waitingScreen" style="display:none;">
+<h2>게임 대기 중...</h2>
+</div>
 
-<div id="status">번호를 선택하고 입장하세요</div>
+<div id="gameScreen" style="display:none;">
+<h2>⚡ 가장 빨리 누르세요!</h2>
+<button onclick="clickReaction()">누르기!</button>
+</div>
 
-<button id="reactionBtn" onclick="clickReaction()" style="display:none;">
-  누르기!
-</button>
+<div class="big" id="resultDisplay"></div>
 
+</div>
 </body>
 </html>
